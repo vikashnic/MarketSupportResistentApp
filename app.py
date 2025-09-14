@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import requests
-import matplotlib.pyplot as plt
 import datetime
 
 # ---------------- NSE API (Primary) ---------------- #
@@ -23,7 +22,6 @@ def fetch_from_nse(symbol: str):
         if df.empty:
             return None
 
-        # Fake OHLC from available fields
         df["Date"] = datetime.datetime.now()
         df.set_index("Date", inplace=True)
         df.rename(columns={"lastPrice": "Close"}, inplace=True)
@@ -103,12 +101,6 @@ if symbol:
         for k, v in levels.items():
             st.write(f"{k}: {v:.2f}")
 
-        # Plot chart
-        fig, ax = plt.subplots(figsize=(8, 4))
-        ax.plot(df.index, df["Close"], label="Close Price", color="blue")
-        ax.axhline(levels["Support"], color="green", linestyle="--", label="Support")
-        ax.axhline(levels["Resistance"], color="red", linestyle="--", label="Resistance")
-        ax.axhline(levels["Stop Loss"], color="orange", linestyle=":", label="Stop Loss")
-        ax.set_title(f"{symbol} Candlestick Levels")
-        ax.legend()
-        st.pyplot(fig)
+        # Plot chart using Streamlit's line_chart
+        st.subheader(f"{symbol} Close Price Chart")
+        st.line_chart(df["Close"])
